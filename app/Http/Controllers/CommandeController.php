@@ -15,7 +15,8 @@ class CommandeController extends Controller
      */
     public function index()
     {
-        return view('commande.index');
+        $commandes=Commande::all();
+        return view('commande.index',compact('commandes'));
     }
 
     /**
@@ -23,7 +24,7 @@ class CommandeController extends Controller
      */
     public function create()
     {
-        //
+        return view('commande.create');
     }
 
     /**
@@ -107,6 +108,9 @@ class CommandeController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $commande=Commande::find($id);
+        $commande->delete();
+        return view(('commande.index'));
+
     }
 }

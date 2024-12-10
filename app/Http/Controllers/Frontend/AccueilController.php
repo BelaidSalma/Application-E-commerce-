@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Categorie;
 use App\Models\Produit;
+use App\Models\User;
 use GuzzleHttp\Handler\Proxy;
 use Illuminate\Http\Request;
 
@@ -17,7 +18,13 @@ class AccueilController extends Controller
     {
         //
         $produits=Produit::all();
-        return view('Frontend.home.accueil', compact('produits'));
+        return view('home.accueil', compact('produits'));
+        
+    }
+    public function shop()
+    {
+        $produits=Produit::all();
+        return view('home.shop', compact('produits'));
     }
 
     /**
@@ -43,7 +50,7 @@ class AccueilController extends Controller
     {
         $produits=Produit::find($id);
         $categorie=Categorie::all();
-        return view('Frontend.home.show', compact('produits'));
+        return view('home.show', compact('produits'));
     }
 
     /**
@@ -67,6 +74,7 @@ class AccueilController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        
+
     }
 }

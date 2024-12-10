@@ -63,7 +63,7 @@ class ProduitController extends Controller
      */
     public function show(string $id)
     {
-        return view('categorie.show');
+       
     }
 
     /**
@@ -111,6 +111,8 @@ class ProduitController extends Controller
      */
     public function destroy(string $id)
     {
-      
+      $produit=Produit::find($id);
+      $produit->delete();
+      return redirect()->route('produit.index')->with('success', 'produit supprimé');
     }
 }

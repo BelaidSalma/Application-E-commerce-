@@ -5,6 +5,7 @@
             {{ __('Liste de Produit') }}
         </h2>
     </x-slot>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -41,19 +42,17 @@
                                 <td>{{$produit->prix}}</td>
                                 <td>{{$produit->quantite}}</td>
                                 <td>
-                                    <div class="btn-group" role="group" aria-label="Actions">
-                                        <a href="{{ route('produit.edit', $produit->id) }}" class="btn btn-warning btn-sm">
-                                            Modifier
-                                        </a>
-                                        <form action="{{ route('produit.destroy', $produit->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette catégorie ?')">
-                                                Supprimer
-                                            </button>
-                                        </form>
+                                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                        <a href="{{ route('produit.edit', $produit->id) }}"
+                                            ><i  style="color: blue;margin-right:10px;"class="fa-solid fa-pen-to-square"></i></a> 
+                                            <form action="{{ route('produit.destroy',$produit->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                 <button><i  onclick="return confirm('Voulez-vous supprimer le role?')" class="fa-solid fa-trash" style="color: red;"></i></button>
+                                            </form>
                                     </div>
                                 </td>
+                            
                               </tr>
                             @endforeach
                         </tbody>

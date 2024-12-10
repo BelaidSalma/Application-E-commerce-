@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,30 +20,47 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
-
     /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
-
+        
         $request->session()->regenerate();
+       
+        if (!Auth::check()) {
+            return redirect('/login'); // Redirige si l'utilisateur n'est pas connecté
+        }
+        //retourne l'utilisateur actuellement connecté sous forme d'une instance du modèle User.
+        $user = Auth::user();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        /** @var \App\User|null $user */
+        
+        if ($user->hasRole('Administration')) {
+            return redirect()->route('dashboard'); // Redirige les admins
+        } elseif ($user->hasRole('Utilisateur')) {
+            return redirect()->route('home.accueil'); // Redirige les utilisateurs
+        } 
+        return redirect()->route('home.accueil'); // Redirige les utilisateurs
     }
 
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
-    {
-        Auth::guard('web')->logout();
+{
+    Auth::guard('web')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+    $user = Auth::user();
+     /** @var \App\User|null $user */
+    if ($user && $user->hasRole('Administration')) {
+        return redirect()->route('dashboard');
     }
+
+    return redirect()->route('home.accueil');
+}
+
 }

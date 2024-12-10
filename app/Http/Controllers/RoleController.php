@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -76,7 +77,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+       
     }
 
     /**
@@ -84,6 +85,8 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role=Role::find($id);
+        $role->delete();
+        return redirect()->route('role.index')->with(key:'succes',value:'Role deleted successfully');
     }
 }

@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
-use Faker\Provider\ar_EG\Person;
+
+use Illuminate\Support\Facades\DB;
+
+use Spatie\Permission\Models\Permission;
+
 use Illuminate\Http\Request;
 
 class PermissionController extends Controller
@@ -63,6 +66,8 @@ class PermissionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $permission=Permission::find($id);
+        $permission->delete();
+        return redirect()->route('permission.index')->with('success','Permission deleted successfully');
     }
 }

@@ -5,6 +5,7 @@
             {{ __('Liste de Role') }}
         </h2>
     </x-slot>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css">
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -24,9 +25,17 @@
                             <tr>
                                 <th scope="row">{{$permission->id}}</th>
                                 <td>{{$permission->name}}</td>
-                                
                                 <td>
-                                    <a class="btn btn-warning btn-sm" href="{{ route('permission.update',$permission->id) }}">Modifier </a>
+                                    <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+                                        <a href="{{ route('permission.update', $permission->id) }}"
+                                            ><i  style="color: blue;margin-right:10px;"class="fa-solid fa-pen-to-square"></i></a> 
+                                            <form action="{{ route('permission.destroy',$permission->id) }}" method="POST">
+                                                @csrf
+                                                @method('DELETE')
+                                                
+                                                 <button><i  onclick="return confirm('Voulez-vous supprimer le role?')" class="fa-solid fa-trash" style="color: red;"></i></button>
+                                            </form>
+                                    </div>
                                 </td>
                               </tr>
                             @endforeach

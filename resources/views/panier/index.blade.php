@@ -143,7 +143,7 @@
                 </div>
                 @endforeach
 
-                <a href="{{ route('home.index') }}" class="btn-back">&larr; Back to Shop</a>
+                <a href="{{ route('home.accueil') }}" class="btn-back">&larr; Back to Shop</a>
             </div>
 
             <!-- Summary Section -->
@@ -151,7 +151,7 @@
                 <h5><b>Summary</b></h5>
                 <p><strong>Total :</strong> {{ number_format($total, 2, ',', ' ') }} MAD</p>
                 <hr>
-                <a href="{{ route('commande.index') }}">
+                <a href="{{ route('commande.create') }}">
                      <button class="btn btn-dark btn-block">CHECKOUT</button>
                 </a>
             </div>
