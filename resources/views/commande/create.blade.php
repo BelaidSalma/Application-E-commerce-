@@ -123,19 +123,17 @@
                 height: 200px;
             }
         }
+        
+
     </style>
 </head>
 <body>
     <div class="container">
-        
         <div   class="image-container"  style="background: url('{{ asset('images/image.png') }}') no-repeat center center; background-size: cover;">
-            
-        </div>
-        
+        </div>      
         <div class="form-container">
-            
                  <h2>Formulaire de Livraison</h2>
-            <form action="{{ route('commande.store') }} " method="post">
+            <form action="{{ route('commande.store') }} " method="post" id="subscription-form">
                 @csrf
                 <div class="form-group">
                     <label for="nom">Nom</label>
@@ -153,12 +151,17 @@
                     <label for="adresse">Adresse de Livraison</label>
                     <input type="text" id="adresse" name="adress_de_livraison" placeholder="Entrez votre adresse de livraison" required>
                 </div>
-    
-                <button type="submit" class="submit-btn">Passer au paiment</button>
+                <div class="form-group">
+                    <label for="card-element">Carte de Crédit</label>
+                    <div id="card-element" ></div>
+                </div>
+               
+                <button type="submit" class="submit-btn">Passer la commande</button>
+
             </form>
-            
-           
         </div>
     </div>
+    <script src="https://js.stripe.com/v3/"></script>
+<script src="{{ asset('js/main.js') }}"></script>
 </body>
 </html>

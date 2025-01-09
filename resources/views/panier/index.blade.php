@@ -151,7 +151,7 @@
                 <h5><b>Summary</b></h5>
                 <p><strong>Total :</strong> {{ number_format($total, 2, ',', ' ') }} MAD</p>
                 <hr>
-                <a href="{{ route('commande.create') }}">
+                <a href="{{ route('commande.create')}}">
                      <button class="btn btn-dark btn-block">CHECKOUT</button>
                 </a>
             </div>

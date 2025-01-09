@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Spatie\StripeWebhooks\StripeWebhooksController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +50,8 @@ Route::middleware(['role:Administrateur'])->group(function(){
 });
 Route::middleware(['role:Utilisateur'])->group(function(){
     Route::resource('/commande',CommandeController::class);
+    Route::get('/confirmation',[CommandeController::class, 'confirmation'])->name('commande.confirmation');
+    Route::get('/echec',[CommandeController::class, 'echec'])->name('commande.echec');
 
 });
 
@@ -60,6 +63,10 @@ Route::resource('/panier',PanierController::class);
 Route::get('/home', [AccueilController::class, 'index'])->name('home.accueil');
 Route::get('/shop', [AccueilController::class, 'shop'])->name('home.shop');
 Route::get('/home/{id}', [AccueilController::class, 'show'])->name('home.show');
+Route::post('stripe/webhook', StripeWebhooksController::class)->name('cashier.webhook')->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class);
+Route::get('/payer',function ( ){
+    return view('subcribe');
+});
 
 
 

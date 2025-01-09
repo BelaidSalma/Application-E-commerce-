@@ -7,6 +7,9 @@ use App\Models\Produit;
 use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stripe\Checkout\Session;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class CommandeController extends Controller
 {
@@ -30,51 +33,72 @@ class CommandeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $this->validate($request,[
-            'adress_de_livraison' => 'required|string|max:150'
+    
+
+public function store(Request $request)
+{
+    $this->validate($request, [
+        'adress_de_livraison' => 'required|string|max:150'
+    ]);
+
+    // Configurer la clé API Stripe
+    Stripe::setApiKey(env('STRIPE_SECRET'));
+
+    // Récupérer les produits du panier
+    $paniers = \Cart::getContent();
+    $lineItems = [];
+
+    // Enregistrer la commande
+    $commande = new Commande();
+    $commande->reference = rand(1000000, 9000000);
+    $commande->total = \Cart::getTotal();
+    $commande->user_id = Auth::user()->id;
+    $commande->adress_de_livraison = $request->adress_de_livraison;
+    $commande->save();
+
+    // Parcourir les éléments du panier
+    foreach ($paniers as $panier) {
+        // Attacher les produits à la commande
+        $commande->produits()->attach($panier->id, [
+            'quantite' => $panier->quantity,
+            'prix' => $panier->price,
         ]);
 
-        //recuperer les produits du panier
-        $paniers = \Cart::getContent();
-        //instancier un objet commande
-        $commande = new Commande();
-        //referencer la commande
-        $commande->reference = rand(1000000,9000000);
-        //recupere le total qui est le total dans le panier
-        $commande->total = \Cart::getTotal();
-        //recuperer l'id d'utilisateur
-        $commande->user_id =Auth::user()->id;
-        //recuperer l'adresse de livraison
-        $commande->adress_de_livraison = $request->adress_de_livraison;
-        //enregistrer la commande
-        $commande->save();
-        //parcourir chaque element du panier
-        foreach ($paniers as $panier){
-            //a méthode attach est utilisée pour associer un produit ($panier->id) 
-            //à une commande via une relation many-to-many.
-            $commande->produits()->attach($panier->id,
-                [
-                    'quantite' => $panier->quantity,
-                    'prix' => $panier->price,
-                ]
-            );
-            //recuperation du produit 
-            $produit = Produit::find($panier->id);
-            //reduction de stock
-            $produit->quantite -= $panier->quantity;
-        }
-        
-        //vider le panier
-        \Cart::clear();
+        // Réduire le stock
+        $produit = Produit::find($panier->id);
+        $produit->quantite -= $panier->quantity;
+        $produit->save();
 
-        
-
-        return redirect()->route('confirmation');
-
-
+        // Ajouter l'article à la liste pour Stripe
+        $lineItems[] = [
+            'price_data' => [
+                'currency' => 'usd',
+                'product_data' => [
+                    'name' => $panier->name,
+                ],
+                'unit_amount' => $panier->price * 100, // en centimes
+            ],
+            'quantity' => $panier->quantity,
+        ];
     }
+
+    // Créer une session de paiement Stripe
+    $session = Session::create([
+        'payment_method_types' => ['card'],
+        'line_items' => $lineItems,
+        'mode' => 'payment',
+        'success_url' => route('commande.confirmation'),
+        'cancel_url' => route('commande.echec'),
+    ]);
+
+    // Vider le panier
+    \Cart::clear();
+
+    // Rediriger vers la session Stripe
+    return redirect($session->url);
+}
+
+        
 
     /**
      * Display the specified resource.
@@ -86,7 +110,9 @@ class CommandeController extends Controller
     public function confirmation(){
         return view('commande.confirmation');
     }
-
+    public function echec(){
+        return view('commande.echec');
+    }
     /**
      * Show the form for editing the specified resource.
      */
